@@ -23,7 +23,7 @@ app.post("/api/transaction",async function(req,res){
 })
 
 app.get("/api/transactions", async function(req,res){
-   await mongoose.connect("mongodb+srv://Ayman:IgFa1xwa2KyO9SjL@cluster0.dhjgeqb.mongodb.net/")
+   await mongoose.connect("mongodb+srv://Ayman:@cluster0.dhjgeqb.mongodb.net/")
    const transactions = await TransactionModel.find();
     res.json(transactions)
 })
