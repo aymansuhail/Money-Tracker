@@ -9,9 +9,51 @@ function App() {
   const [price,setprice] = useState('')
   const [transactions,settransactions] = useState([]) 
 
+  const formatToLocalTime = (utcDateTimeString) => {
+    const utcDateTime = new Date(utcDateTimeString);
+    const localDateTimeString = utcDateTime.toLocaleString('en-US', {
+      timeZone: 'Asia/Kolkata', // Use 'Asia/Kolkata' for Indian time zone
+    });
+    return localDateTimeString;
+  };
+  
+
+
+
+  async function deleteTransaction(id) {
+    try {
+      const confirmDelete = window.confirm('Are you sure you want to delete this transaction?');
+  
+      if (confirmDelete) {
+        const url = `http://localhost:4040/api/transaction/${id}`;
+        console.log('Delete URL:', url); // Log the URL for debugging purposes
+        const response = await fetch(url, {
+          method: 'DELETE',
+        });
+  
+        if (response.ok) {
+          const deletedTransaction = await response.json();
+          console.log('Deleted transaction:', deletedTransaction);
+          settransactions(prevTransactions =>
+            prevTransactions.filter(transaction => transaction._id !== id)
+          );
+        } else {
+          console.error('Error deleting transaction:', response.status);
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+    }
+  }
+  
+  
+
+
+
+
   useEffect(() => {
     getTransactions().then(settransactions);
-  }, [transactions]);
+  }, []);
   
   async function getTransactions() {
     const url = "http://localhost:4040/api/transactions";
@@ -21,7 +63,7 @@ function App() {
   }
 
   function addnewtransaction(e) {
-    e.preventDefault();
+    // e.preventDefault();
    const url = "http://localhost:4040/api/transaction"
    
    fetch(url, {
@@ -42,10 +84,15 @@ function App() {
       });
     });
   }  
+  let balance = 0;
+  for(const transaction of transactions){
+    balance = balance + transaction.price;
+  }
+  
   return (
     <>
      <main>
-     <h1>400<span>.00</span></h1>
+     <h1>₹{balance}</h1>
      <form onSubmit = {addnewtransaction}>
       <div className='basic'>
       <input type='text' 
@@ -74,8 +121,8 @@ function App() {
      <div className="transactions">
      {transactions.length > 0 && transactions.map (transaction => 
      (
-      <div>
-        <div className="transaction">
+      <div key={transaction._id}>
+        <div  className="transaction">
           <div className="left">
               <div className="name">{transaction.name}</div>
               <div className="desc">{transaction.desc}</div>
@@ -87,8 +134,11 @@ function App() {
 </div>
 
             
-            <div className="datetime">{transaction.datetime}</div>
+            <div className="datetime"> {formatToLocalTime(transaction.datetime)}</div>
           </div>
+          <button onClick={() => deleteTransaction(transaction._id)}>
+                    Delete
+                  </button>
         </div>
 
       </div>

@@ -13,6 +13,10 @@ h1{
   text-align: center;
   color: #fff;
   margin: 0;
+  font-size: 2.5rem;
+}
+h1 span{
+  font-size: .5rem;
 }
 form{
   margin-top: 20px;
@@ -74,3 +78,6 @@ div.transaction div.datetime{
   color: #888;
 }
 
+.transactions li {
+  list-style: none;
+}
